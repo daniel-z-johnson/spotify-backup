@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/daniel-z-johnson/spotify-backup/models"
 	"github.com/daniel-z-johnson/spotify-backup/templates"
 	"go.uber.org/zap"
 )
@@ -20,4 +21,6 @@ func main() {
 	t := templates.FS
 	dir, _ := t.ReadDir(".")
 	fmt.Println(dir[0].Info())
+	oauth := &models.SpotifyOAuthService{RedirectURL: "http://tURL", ClientID: "tID"}
+	fmt.Println(oauth.GetOAuthURL())
 }

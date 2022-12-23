@@ -19,4 +19,7 @@ func TestLoadConf(t *testing.T) {
 	if c.Secret != "tSecret" {
 		t.Error("secret should have value tSecret")
 	}
+	if c.RedirectUrl != "tURL" {
+		t.Error("redirectUrl should have value tURL")
+	}
 }

@@ -6,8 +6,9 @@ import (
 )
 
 type Conf struct {
-	ClientId string `json:"client"`
-	Secret   string `json:"secret"`
+	ClientId    string `json:"client"`
+	Secret      string `json:"secret"`
+	RedirectUrl string `json:"redirectUrl"`
 }
 
 func LoadConf(file *string) (*Conf, error) {

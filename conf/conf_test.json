@@ -1,4 +1,5 @@
 {
   "client" : "tClient",
-  "secret" : "tSecret"
+  "secret" : "tSecret",
+  "redirectUrl" : "tURL"
 }
