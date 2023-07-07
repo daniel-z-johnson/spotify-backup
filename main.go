@@ -7,5 +7,10 @@ import (
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	log.Print("Application Start")
+
+	subLog := log.With().
+		Str("Name", "spotify_backup").
+		Logger()
+	subLog.Info().
+		Msg("Application Start")
 }
