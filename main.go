@@ -6,11 +6,11 @@ import (
 )
 
 func main() {
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
-	subLog := log.With().
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	logger := log.With().
 		Str("Name", "spotify_backup").
 		Logger()
-	subLog.Info().
+	logger.Info().
 		Msg("Application Start")
 }
