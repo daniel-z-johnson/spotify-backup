@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/daniel-z-johnson/spotify-backup/controllers"
 	"github.com/daniel-z-johnson/spotify-backup/templates"
 	"github.com/daniel-z-johnson/spotify-backup/views"
 	"github.com/go-chi/chi/v5"
@@ -18,15 +19,12 @@ func main() {
 	logger.Info().
 		Msg("Application Start")
 
-	handler := chi.NewMux()
-	example, err := views.ParseFS(templates.TemplateFiles, "main.gohtml", "example.gohtml")
-	if err != nil {
-		panic("Template issue: " + err.Error())
-	}
-	handler.HandleFunc("/example", func(resp http.ResponseWriter, req *http.Request) {
-		example.Execute(resp, nil)
-	})
-	if err := http.ListenAndServe(":1117", handler); err != nil {
+	router := chi.NewMux()
+	example := views.Must(views.ParseFS(templates.TemplateFiles, "main.gohtml", "example.gohtml"))
+	staticHandler := http.FileServer(http.FS(templates.StaticFiles))
+	router.Get("/example", controllers.StaticPage(example))
+	router.Handle("/static/*", staticHandler)
+	if err := http.ListenAndServe(":1117", router); err != nil {
 		panic(err)
 	}
 }
