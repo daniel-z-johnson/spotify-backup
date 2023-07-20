@@ -16,6 +16,7 @@ func Logger(logger zerolog.Logger) func(handler http.Handler) http.Handler {
 			logger.Info().
 				Str("duration", time.Since(start).String()).
 				Int("code", wrapped.Status()).
+				Int("bytes", wrapped.TotalBytes).
 				Str("path", r.URL.Path).
 				Str("method", r.Method).
 				Msg("request info")
@@ -30,6 +31,7 @@ type responseWriter struct {
 	http.ResponseWriter
 	code        int
 	wroteHeader bool
+	TotalBytes  int
 }
 
 func wrapResponseWriter(writer http.ResponseWriter) *responseWriter {
@@ -42,10 +44,16 @@ func (rw *responseWriter) Status() int {
 	}
 	return rw.code
 }
+
 func (rw *responseWriter) WriteHeader(code int) {
 	if !rw.wroteHeader {
 		rw.code = code
 		rw.ResponseWriter.WriteHeader(code)
 		rw.wroteHeader = true
 	}
+}
+
+func (rw *responseWriter) Write(bytes []byte) (int, error) {
+	rw.TotalBytes += len(bytes)
+	return rw.ResponseWriter.Write(bytes)
 }
