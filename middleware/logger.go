@@ -19,6 +19,7 @@ func Logger(logger zerolog.Logger) func(handler http.Handler) http.Handler {
 				Int("bytes", wrapped.TotalBytes).
 				Str("path", r.URL.Path).
 				Str("method", r.Method).
+				Str("remoteAddr", r.RemoteAddr).
 				Msg("request info")
 		}
 
