@@ -2,9 +2,9 @@ package views
 
 import (
 	"fmt"
-	"github.com/rs/zerolog"
 	"html/template"
 	"io/fs"
+	"log/slog"
 	"net/http"
 )
 
@@ -27,14 +27,14 @@ func ParseFS(fs fs.FS, pattern ...string) (Template, error) {
 
 type Template struct {
 	htmlTpl *template.Template
-	log     zerolog.Logger
+	slog    slog.Logger
 }
 
 func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	err := t.htmlTpl.Execute(w, data)
 	if err != nil {
-		t.log.Error().Msgf("executing template: %v", err)
+		t.slog.Error(fmt.Sprintf("executing template: %v", err))
 		http.Error(w, "There was an error executing the template.", http.StatusInternalServerError)
 		return
 	}

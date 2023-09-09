@@ -6,19 +6,16 @@ import (
 	"github.com/daniel-z-johnson/spotify-backup/templates"
 	"github.com/daniel-z-johnson/spotify-backup/views"
 	"github.com/go-chi/chi/v5"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+	"log/slog"
 	"net/http"
+	"os"
 )
 
 func main() {
 
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	logger := log.With().
-		Str("Name", "spotify_backup").
-		Logger()
-	logger.Info().
-		Msg("Application Start")
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	logger = logger.With(slog.Any("application", "spotify_backup"))
+	logger.Info("Application Start")
 
 	router := chi.NewMux()
 	example := views.Must(views.ParseFS(templates.TemplateFiles, "main.gohtml", "example.gohtml"))

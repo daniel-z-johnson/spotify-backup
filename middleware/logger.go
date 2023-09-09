@@ -1,26 +1,26 @@
 package middleware
 
 import (
-	"github.com/rs/zerolog"
+	"log/slog"
 	"net/http"
 	"time"
 )
 
-func Logger(logger zerolog.Logger) func(handler http.Handler) http.Handler {
+func Logger(logger *slog.Logger) func(handler http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 
 			start := time.Now()
 			wrapped := wrapResponseWriter(w)
 			next.ServeHTTP(wrapped, r)
-			logger.Info().
-				Str("duration", time.Since(start).String()).
-				Int("code", wrapped.Status()).
-				Int("bytes", wrapped.TotalBytes).
-				Str("path", r.URL.Path).
-				Str("method", r.Method).
-				Str("remoteAddr", r.RemoteAddr).
-				Msg("request info")
+			logger.Info("request info",
+				slog.Duration("duration", time.Since(start)),
+				slog.Any("code", wrapped.Status()),
+				slog.Any("bytes", wrapped.TotalBytes),
+				slog.Any("path", r.URL.Path),
+				slog.Any("method", r.Method),
+				slog.Any("requestAddr", r.RemoteAddr),
+			)
 		}
 
 		return http.HandlerFunc(fn)
