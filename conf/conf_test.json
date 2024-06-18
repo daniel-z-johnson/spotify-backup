@@ -1,5 +1,15 @@
 {
-  "client" : "tClient",
-  "secret" : "tSecret",
-  "redirectUrl" : "tURL"
+  "spotify" : {
+    "client": "tClient",
+    "secret": "tSecret",
+    "redirectUrl": "tURL"
+  },
+  "db" : {
+    "host" : "host",
+    "port" : "port",
+    "user": "user",
+    "password" : "password",
+    "database" : "database",
+    "sslMode" : "sslMode"
+  }
 }

@@ -2,13 +2,24 @@ package conf
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 )
 
 type Conf struct {
-	ClientId    string `json:"client"`
-	Secret      string `json:"secret"`
-	RedirectUrl string `json:"redirectUrl"`
+	Spotity struct {
+		ClientId    string `json:"client"`
+		Secret      string `json:"secret"`
+		RedirectUrl string `json:"redirectUrl"`
+	} `json:"spotify"`
+	DB struct {
+		Host     string `json:"host"`
+		Port     string `json:"port"`
+		User     string `json:"user"`
+		Password string `json:"password"`
+		Database string `json:"database"`
+		SSLMode  string `json:"sslMode"`
+	} `json:"db"`
 }
 
 func LoadConf(file *string) (*Conf, error) {
@@ -22,4 +33,9 @@ func LoadConf(file *string) (*Conf, error) {
 	var conf Conf
 	decoder.Decode(&conf)
 	return &conf, nil
+}
+
+func (c *Conf) DBConfig() string {
+	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		c.DB.Host, c.DB.Port, c.DB.User, c.DB.Password, c.DB.Database, c.DB.SSLMode)
 }

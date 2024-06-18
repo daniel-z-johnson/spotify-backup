@@ -1,0 +1,11 @@
+services:
+
+    db: 
+        image: postgres:16
+        restart: always 
+        environment: 
+            POSTGRES_USER: spots
+            POSTGRES_PASSWORD: cliford
+            POSTGRES_DB: favs
+        ports: 
+            - 5433:5432 
