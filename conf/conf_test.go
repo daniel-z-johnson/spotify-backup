@@ -13,13 +13,13 @@ func TestLoadConf(t *testing.T) {
 	if c == nil {
 		t.Fatal("config loaded should not be nil")
 	}
-	if c.Spotity.ClientId != "tClient" {
+	if c.Spotify.ClientId != "tClient" {
 		t.Error("client should have value tClient")
 	}
-	if c.Spotity.Secret != "tSecret" {
+	if c.Spotify.Secret != "tSecret" {
 		t.Error("secret should have value tSecret")
 	}
-	if c.Spotity.RedirectUrl != "tURL" {
+	if c.Spotify.RedirectUrl != "tURL" {
 		t.Error("redirectUrl should have value tURL")
 	}
 }

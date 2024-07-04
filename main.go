@@ -31,7 +31,10 @@ func main() {
 
 	router := chi.NewMux()
 	example := views.Must(views.ParseFS(templates.TemplateFiles, "main.gohtml", "example.gohtml"))
+	oauthPage := views.Must(views.ParseFS(templates.TemplateFiles, "main.gohtml", "oauthpage.gohtml"))
 	staticHandler := http.FileServer(http.FS(templates.StaticFiles))
+	music := &controllers.Music{}
+	music.Templates.OAuthPage = oauthPage
 
 	router.Use(middleware.Logger(logger))
 	router.Use(middleware.Session())

@@ -25,7 +25,6 @@ func Session() func(handler http.Handler) http.Handler {
 			r = r.WithContext(c)
 			next.ServeHTTP(w, r)
 		}
-
 		return http.HandlerFunc(fn)
 	}
 }

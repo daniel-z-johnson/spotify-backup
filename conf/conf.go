@@ -7,7 +7,7 @@ import (
 )
 
 type Conf struct {
-	Spotity struct {
+	Spotify struct {
 		ClientId    string `json:"client"`
 		Secret      string `json:"secret"`
 		RedirectUrl string `json:"redirectUrl"`
