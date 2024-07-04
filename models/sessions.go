@@ -1,25 +1,59 @@
 package models
 
-import "database/sql"
+import (
+	"crypto/sha512"
+	"database/sql"
+	"encoding/base64"
+)
 
 type Session struct {
 	ID        int64
 	Key       string
+	Value     string
 	Token     string
 	TokenHash string
 }
 
 type SessionRepo struct {
-	db *sql.DB
+	DB *sql.DB
 }
 
-func (sr *SessionRepo) Save(s *Session) (*Session, error) {
-	row := sr.db.QueryRow(`INSERT INTO sessions (token_has, key) 
-									VALUES ($1, $2) RETURNING id`,
-		s.TokenHash, s.Key)
-	err := row.Scan(&s.ID)
+func (sr *SessionRepo) Create(token, key, value string) (*Session, error) {
+	session := &Session{}
+	session.Key = key
+	session.Value = value
+	session.Token = token
+	tokenHash := sha512.Sum512([]byte(session.Token))
+	session.TokenHash = base64.URLEncoding.EncodeToString(tokenHash[:])
+	row := sr.DB.QueryRow("INSERT INTO sessions (key, value, token_hash) VALUES ($1, $2, $3) RETURNING id",
+		session.Key,
+		session.Value,
+		session.TokenHash)
+	err := row.Scan(&session.ID)
 	if err != nil {
 		return nil, err
 	}
-	return s, nil
+	return session, nil
+}
+
+func (sr *SessionRepo) deleteSession(token, key string) error {
+	tokenHash := sha512.Sum512([]byte(token))
+	_, err := sr.DB.Exec(`DELETE FROM sessions WHERE token_hash = $1 AND key = $2`, tokenHash, key)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (sr *SessionRepo) Find(token, key string) (*Session, error) {
+	session := &Session{}
+	tokenHashB64 := sha512.Sum512([]byte(session.Token))
+	tokenHash := base64.URLEncoding.EncodeToString(tokenHashB64[:])
+	row := sr.DB.QueryRow(`SELECT id, token_hash, key, value WHERE token_hash = $1`, tokenHash)
+	err := row.Err()
+	if err != nil {
+		return nil, err
+	}
+	row.Scan(&session.ID, &session.TokenHash, &session.Key, &session.Value)
+	return session, nil
 }

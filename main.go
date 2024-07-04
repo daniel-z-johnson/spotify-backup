@@ -26,12 +26,16 @@ func main() {
 	flag.Parse()
 
 	config := confSetup(fileLocation)
-	dbSetup(config)
+	db := dbSetup(config)
+	_ = &models.SessionRepo{DB: db}
 
 	router := chi.NewMux()
 	example := views.Must(views.ParseFS(templates.TemplateFiles, "main.gohtml", "example.gohtml"))
 	staticHandler := http.FileServer(http.FS(templates.StaticFiles))
+
 	router.Use(middleware.Logger(logger))
+	router.Use(middleware.Session())
+
 	router.Get("/example", controllers.StaticPage(example))
 	router.Handle("/static/*", staticHandler)
 	if err := http.ListenAndServe(":1117", router); err != nil {
