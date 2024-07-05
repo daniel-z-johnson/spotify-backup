@@ -9,7 +9,7 @@ type Music struct {
 	Templates struct {
 		OAuthPage Template
 	}
-	SessionsRepo *models.SessionRepo
+	OAuth *models.OAuth
 }
 
 func (m *Music) OauthPage(w http.ResponseWriter, r *http.Request) {

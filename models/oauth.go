@@ -1,23 +1,43 @@
 package models
 
 import (
-	"crypto/sha256"
 	"database/sql"
-	"encoding/base64"
+	"fmt"
 	"github.com/daniel-z-johnson/spotify-backup/conf"
 	"net/url"
+	"time"
 )
 
 const (
 	oauthURL = "https://accounts.spotify.com/authorize"
+	tokenURL = "https://accounts.spotify.com/api/token"
 )
 
 type OAuth struct {
-	DB   *sql.DB
-	Conf *conf.Conf
+	DB       *sql.DB
+	Conf     *conf.Conf
+	Sessions *SessionRepo
 }
 
-func (oauth *OAuth) LinkForOAuth(challenge *string) (string, error) {
+type TokenRequestBody struct {
+	GrantType    string `json:"grant_type"`
+	ClientID     string `json:"client_id"`
+	Code         string `json:"code"`
+	RedirectURL  string `json:"redirect_url"`
+	CodeVerifier string `json:"code_verifier"`
+}
+
+type Token struct {
+	ID           int64
+	TokenHash    string
+	AccessToken  string
+	TokenType    string
+	Scope        string
+	ExpiresIn    time.Time
+	RefreshToken string
+}
+
+func (oauth *OAuth) LinkForOAuth(token *string) (string, error) {
 	authURL, err := url.Parse(oauthURL)
 	if err != nil {
 		return "", err
@@ -28,10 +48,24 @@ func (oauth *OAuth) LinkForOAuth(challenge *string) (string, error) {
 	queries.Set("response_type", "code")
 	queries.Set("redirect_uri", oauth.Conf.Spotify.RedirectUrl)
 	queries.Set("scope", "playlist-read-private playlist-read-collaborative user-library-read")
-	queries.Set("code_challenge_method", "S256")
-	codehash := sha256.Sum256([]byte(*challenge))
-	queries.Set("code_challenge", base64.URLEncoding.EncodeToString(codehash[:]))
+	queries.Set("show_dialog", "true")
 	authURL.RawQuery = queries.Encode()
 
 	return authURL.String(), nil
+}
+
+func (oauth *OAuth) GenTokenCode(code, challenge string) error {
+	//tokenURL, err := url.Parse(tokenURL)
+	//if err != nil {
+	//	return err
+	//}
+	//requestBody := TokenRequestBody{
+	//	ClientID:     oauth.Conf.Spotify.ClientId,
+	//	Code:         code,
+	//	RedirectURL:  oauth.Conf.Spotify.RedirectUrl,
+	//	CodeVerifier: challenge,
+	//	GrantType:    "authorization_code",
+	//}
+
+	return fmt.Errorf("Not implemented")
 }

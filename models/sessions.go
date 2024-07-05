@@ -25,6 +25,7 @@ func (sr *SessionRepo) Create(token, key, value string) (*Session, error) {
 	session.Token = token
 	tokenHash := sha512.Sum512([]byte(session.Token))
 	session.TokenHash = base64.URLEncoding.EncodeToString(tokenHash[:])
+	sr.deleteSession(token, key)
 	row := sr.DB.QueryRow("INSERT INTO sessions (key, value, token_hash) VALUES ($1, $2, $3) RETURNING id",
 		session.Key,
 		session.Value,
@@ -47,9 +48,9 @@ func (sr *SessionRepo) deleteSession(token, key string) error {
 
 func (sr *SessionRepo) Find(token, key string) (*Session, error) {
 	session := &Session{}
-	tokenHashB64 := sha512.Sum512([]byte(session.Token))
-	tokenHash := base64.URLEncoding.EncodeToString(tokenHashB64[:])
-	row := sr.DB.QueryRow(`SELECT id, token_hash, key, value WHERE token_hash = $1`, tokenHash)
+	tokenHash64 := sha512.Sum512([]byte(token))
+	tokenHash := base64.URLEncoding.EncodeToString(tokenHash64[:])
+	row := sr.DB.QueryRow(`SELECT id, token_hash, key, value FROM sessions WHERE token_hash = $1`, tokenHash)
 	err := row.Err()
 	if err != nil {
 		return nil, err

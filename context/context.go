@@ -4,7 +4,7 @@ import "context"
 
 const (
 	sessionKey = "session"
-	codeKey    = "code"
+	stateKey
 )
 
 func WithSession(ctx context.Context, code *string) context.Context {
@@ -20,12 +20,12 @@ func GetSession(ctx context.Context) *string {
 	return code
 }
 
-func WithCode(ctx context.Context, code *string) context.Context {
-	return context.WithValue(ctx, codeKey, code)
+func WithState(ctx context.Context, code *string) context.Context {
+	return context.WithValue(ctx, stateKey, code)
 }
 
 func GetCode(ctx context.Context) *string {
-	val := ctx.Value(codeKey)
+	val := ctx.Value(stateKey)
 	code, ok := val.(*string)
 	if !ok {
 		return nil

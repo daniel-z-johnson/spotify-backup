@@ -27,7 +27,7 @@ func main() {
 
 	config := confSetup(fileLocation)
 	db := dbSetup(config)
-	_ = &models.SessionRepo{DB: db}
+	sessionRepo := &models.SessionRepo{DB: db}
 
 	router := chi.NewMux()
 	example := views.Must(views.ParseFS(templates.TemplateFiles, "main.gohtml", "example.gohtml"))
@@ -35,11 +35,14 @@ func main() {
 	staticHandler := http.FileServer(http.FS(templates.StaticFiles))
 	music := &controllers.Music{}
 	music.Templates.OAuthPage = oauthPage
+	sessionStore := middleware.SessionStore{Session: sessionRepo}
 
 	router.Use(middleware.Logger(logger))
 	router.Use(middleware.Session())
+	router.Use(sessionStore.HandleState())
 
 	router.Get("/example", controllers.StaticPage(example))
+	router.Get("/oauth", music.OauthPage)
 	router.Handle("/static/*", staticHandler)
 	if err := http.ListenAndServe(":1117", router); err != nil {
 		panic(err)
