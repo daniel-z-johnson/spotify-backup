@@ -27,7 +27,10 @@ func main() {
 	flag.Parse()
 
 	config := confSetup(fileLocation)
-	dbSetup(config) // need to use
+	_, err := models.Open(config)
+	if err != nil {
+		panic(err)
+	}
 
 	router := chi.NewMux()
 	example := views.Must(views.ParseFS(templates.TemplateFiles, "main.gohtml", "example.gohtml"))
